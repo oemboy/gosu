@@ -1,4 +1,4 @@
-FROM golang:1.24.6-trixie
+FROM golang:1.25.14-trixie
 
 RUN set -eux; \
 	apt-get install --update -y --no-install-recommends \
@@ -9,11 +9,12 @@ RUN set -eux; \
 
 # https://github.com/tianon/fake-git
 # https://github.com/tianon/fake-git/commits/HEAD
-ENV FAKEGIT_COMMIT dc6774bbecc1f72de44d02bfd4385a4e6f45f807
+COPY fake-git.sh /opt/fake-git/fake-git.sh
+ENV FAKEGIT_COMMIT=dc6774bbecc1f72de44d02bfd4385a4e6f45f807
 RUN set -eux; \
-	git init /opt/fake-git; \
-	git -C /opt/fake-git fetch --depth 1 https://github.com/tianon/fake-git.git "$FAKEGIT_COMMIT:"; \
-	git -C /opt/fake-git checkout FETCH_HEAD; \
+#	git init /opt/fake-git; \
+#	git -C /opt/fake-git fetch --depth 1 https://github.com/tianon/fake-git.git "$FAKEGIT_COMMIT:"; \
+#	git -C /opt/fake-git checkout FETCH_HEAD; \
 	ln -svfT /opt/fake-git/fake-git.sh /usr/local/bin/git; \
 	hash -r; \
 	FAKEGIT_GO_SEMVER='v1.2.3' git --fake
@@ -22,7 +23,7 @@ RUN set -eux; \
 ENV BUILD_FLAGS="-v -trimpath -ldflags '-d -w' -buildvcs=true"
 
 # disable CGO for ALL THE THINGS (to help ensure no libc)
-ENV CGO_ENABLED 0
+ENV CGO_ENABLED=0
 
 RUN set -eux; \
 	{ \

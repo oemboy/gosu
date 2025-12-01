@@ -14,3 +14,4 @@ file gosu*
 ls -lFh gosu* SHA256SUMS*
 
 "./gosu-$(dpkg --print-architecture)" --help
+docker rmi gosu
